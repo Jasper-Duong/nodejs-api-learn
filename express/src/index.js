@@ -1,40 +1,31 @@
 const express = require("express");
-const { friends } = require("./data");
+const path = require("path");
 const { timer } = require("./middlewares");
+const { friendsRouter } = require("./routes/friends.routers");
+const { messagesRouter } = require("./routes/messages.routers");
 const app = express();
 const PORT = 8080;
+
+// APP SET
+app.set("view engine", "hbs");
+app.set("views", path.join(__dirname, "view"));
 
 // MIDDLEWARES
 app.use(timer);
 app.use(express.json());
 
-app.get("/friends", (req, res) => {
-  res.send(friends);
-  console.log("Get friends Successfully");
+// ROUTES
+app.get("/", (req, res) => {
+  res.render(path.join(__dirname, "view", "index.hbs"), {
+    title: "Dev Process",
+    heading: "Developer Process @ Globee"
+  });
 });
+app.use("/", express.static(path.join(__dirname, "view")));
+app.use("/friends", friendsRouter);
+app.use("/messages", messagesRouter);
 
-app.get("/friends/:id", (req, res) => {
-  const id = +req.params.id;
-  res.json(friends.filter((ele) => ele.id === id)[0]);
-  console.log(`Get friend with ID ${id} Successfully`);
-});
-
-app.post("/friends", (req, res) => {
-  if (!req.body.name || !req.body.age) {
-    return res.status(400).json({
-      error: "Friend is in invalid shape!",
-    });
-  }
-  const { name, age } = req.body;
-  const newFriend = {
-    id: friends.length, 
-    name,
-    age,
-  };
-  friends.push(newFriend);
-  res.json(newFriend);
-});
-
+// APP EXPOSE
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
