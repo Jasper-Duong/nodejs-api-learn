@@ -3,7 +3,7 @@ const timer = (req, res, next) => {
   next();
   const end = Date.now();
   const duration = end - start;
-  console.log(`${req.method} ${req.url} ${duration}s`);
+  console.log(`${req.method} ${req.baseUrl}${req.url} ${duration}ms`);
 };
 
 module.exports = { timer };
